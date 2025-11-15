@@ -168,14 +168,6 @@ We offer comprehensive support through multiple channels:
 * Email support for account holders
 * Documentation and tutorials at W3A11y.com
 
-== Screenshots ==
-
-1. **Media Library Integration** - Generate button seamlessly integrated into WordPress Media Library  
-2. **AI Image Generation Modal** - Generate images and edit from text descriptions via text or voice input with professional interface
-3. **AltText Generation** - One-click AI-generated alt text directly from Media Library
-4. **Bulk AltText Generation** - Generate alt text for multiple images at once
-5. **Settings Page** - Clean, professional configuration page for API key and preferences
-
 == Changelog ==
 
 = 1.0.0 =
