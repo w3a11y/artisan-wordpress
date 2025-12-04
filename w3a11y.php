@@ -3,7 +3,7 @@
  * Plugin Name: W3A11Y Artisan
  * Plugin URI: https://w3a11y.com/artisan
  * Description: AI-powered image and alttext generation and editing directly in WordPress Media Library. Create and edit images with simple text prompts using advanced AI technology.
- * Version: 1.0.0
+ * Version: 1.0
  * Author: W3A11Y
  * Author URI: https://w3a11y.com
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('W3A11Y_ARTISAN_VERSION', '1.0.0');
+define('W3A11Y_ARTISAN_VERSION', '1.0');
 define('W3A11Y_ARTISAN_PLUGIN_FILE', __FILE__);
 define('W3A11Y_ARTISAN_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('W3A11Y_ARTISAN_PLUGIN_URL', plugin_dir_url(__FILE__));

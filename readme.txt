@@ -4,7 +4,7 @@ Tags: ai, image-generation, accessibility, alt-text, media-library
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -178,7 +178,7 @@ We offer comprehensive support through multiple channels:
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0 =
 * Initial release
 * AI image generation from text descriptions
 * AI-powered image editing capabilities
@@ -191,7 +191,7 @@ We offer comprehensive support through multiple channels:
 
 == Upgrade Notice ==
 
-= 1.0.0 =
+= 1.0 =
 This is the initial release of W3A11Y Artisan. Install now to start generating professional AI images directly in your WordPress Media Library.
 
 == Additional Info ==
