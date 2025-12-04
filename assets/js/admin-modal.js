@@ -2478,7 +2478,7 @@
             // Create minimal fallback configuration for dynamic loading scenarios
             window.w3a11yArtisan = {
                 api_configured: true, // Assume configured if modal is being loaded
-                ajax_url: window.ajaxurl || '/wp-admin/admin-ajax.php',
+                ajax_url: window.ajaxurl || '', // Use WordPress provided ajaxurl only
                 nonce: '', // Will be handled by WordPress nonce system
                 texts: {
                     generating: 'Generating image...',
@@ -2501,17 +2501,10 @@
                 }
             }
 
-            // Try to get AJAX URL from global ajaxurl or estimate from current URL
+            // Try to get AJAX URL from global ajaxurl if not set via localized script
             if (!window.w3a11yArtisan.ajax_url) {
                 if (typeof window.ajaxurl !== 'undefined') {
                     window.w3a11yArtisan.ajax_url = window.ajaxurl;
-                } else {
-                    // Try to construct from current URL
-                    const currentUrl = window.location.href;
-                    const match = currentUrl.match(/(https?:\/\/[^\/]+)/);
-                    if (match) {
-                        window.w3a11yArtisan.ajax_url = match[1] + '/wp-admin/admin-ajax.php';
-                    }
                 }
             }
         }

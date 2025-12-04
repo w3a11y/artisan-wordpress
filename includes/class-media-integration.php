@@ -88,18 +88,18 @@ class W3A11Y_Artisan_Media_Integration {
         if (!w3a11y_artisan_is_configured()) {
             return;
         }
-        ?>
-        <script type="text/javascript">
+        
+        $inline_script = "
         document.addEventListener('DOMContentLoaded', function() {
-            // Find the "Add New" button and add our button after it
+            // Find the \"Add New\" button and add our button after it
             var addNewButton = document.querySelector('.page-title-action');
             if (addNewButton) {
                 var artisanButton = document.createElement('button');
                 artisanButton.type = 'button';
                 artisanButton.className = 'w3a11y-artisan-generate-btn';
                 artisanButton.id = 'w3a11y-generate-new-image';
-                artisanButton.innerHTML = '<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g fill="#000000"><path d="M4.083.183a.5.5 0 00-.65.65l.393.981a.5.5 0 010 .371l-.393.982a.5.5 0 00.65.65l.981-.393a.5.5 0 01.372 0l.98.392a.5.5 0 00.65-.65l-.392-.98a.5.5 0 010-.372l.393-.981a.5.5 0 00-.65-.65l-.981.392a.5.5 0 01-.372 0l-.98-.392z"/><path fill-rule="evenodd" d="M11.414 4.104a2 2 0 00-2.828 0L.808 11.882a2 2 0 002.828 2.828l7.778-7.778a2 2 0 000-2.828zm-1.768 1.06a.5.5 0 01.708.707l-.884.884-.707-.707.883-.884zM7.702 7.11l.707.707-5.834 5.834a.5.5 0 11-.707-.707l5.834-5.834z" clip-rule="evenodd"/><path d="M10.572 11.21a.5.5 0 010-.92l1.22-.522a.5.5 0 00.262-.262l.522-1.22a.5.5 0 01.92 0l.521 1.22a.5.5 0 00.263.262l1.219.522a.5.5 0 010 .92l-1.219.522a.5.5 0 00-.263.263l-.522 1.218a.5.5 0 01-.919 0l-.522-1.218a.5.5 0 00-.263-.263l-1.219-.522zM12.833.183a.5.5 0 00-.65.65l.293.731a.5.5 0 010 .371l-.293.732a.5.5 0 00.65.65l.731-.293a.5.5 0 01.372 0l.73.292a.5.5 0 00.65-.65l-.292-.73a.5.5 0 010-.372l.293-.731a.5.5 0 00-.65-.65l-.731.292a.5.5 0 01-.372 0l-.73-.292z"/></g></svg>' +
-                    '<?php echo esc_js(__('Generate Image With W3A11Y Artisan', 'w3a11y-artisan')); ?>';
+                artisanButton.innerHTML = '<svg width=\"16px\" height=\"16px\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"><g fill=\"#000000\"><path d=\"M4.083.183a.5.5 0 00-.65.65l.393.981a.5.5 0 010 .371l-.393.982a.5.5 0 00.65.65l.981-.393a.5.5 0 01.372 0l.98.392a.5.5 0 00.65-.65l-.392-.98a.5.5 0 010-.372l.393-.981a.5.5 0 00-.65-.65l-.981.392a.5.5 0 01-.372 0l-.98-.392z\"/><path fill-rule=\"evenodd\" d=\"M11.414 4.104a2 2 0 00-2.828 0L.808 11.882a2 2 0 002.828 2.828l7.778-7.778a2 2 0 000-2.828zm-1.768 1.06a.5.5 0 01.708.707l-.884.884-.707-.707.883-.884zM7.702 7.11l.707.707-5.834 5.834a.5.5 0 11-.707-.707l5.834-5.834z\" clip-rule=\"evenodd\"/><path d=\"M10.572 11.21a.5.5 0 010-.92l1.22-.522a.5.5 0 00.262-.262l.522-1.22a.5.5 0 01.92 0l.521 1.22a.5.5 0 00.263.262l1.219.522a.5.5 0 010 .92l-1.219.522a.5.5 0 00-.263.263l-.522 1.218a.5.5 0 01-.919 0l-.522-1.218a.5.5 0 00-.263-.263l-1.219-.522zM12.833.183a.5.5 0 00-.65.65l.293.731a.5.5 0 010 .371l-.293.732a.5.5 0 00.65.65l.731-.293a.5.5 0 01.372 0l.73.292a.5.5 0 00.65-.65l-.292-.73a.5.5 0 010-.372l.293-.731a.5.5 0 00-.65-.65l-.731.292a.5.5 0 01-.372 0l-.73-.292z\"/></g></svg>' +
+                    '" . esc_js(__('Generate Image With W3A11Y Artisan', 'w3a11y-artisan')) . "';
                 
                 // Insert after the Add New button
                 addNewButton.parentNode.insertBefore(artisanButton, addNewButton.nextSibling);
@@ -113,8 +113,8 @@ class W3A11Y_Artisan_Media_Integration {
                 });
             }
         });
-        </script>
-        <?php
+        ";
+        wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
     }
     
     /**
@@ -357,8 +357,7 @@ class W3A11Y_Artisan_Media_Integration {
             wp_send_json_error(array('message' => __('Insufficient permissions.', 'w3a11y-artisan')));
         }
         
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- Validated with intval() below
-        $attachment_id = isset($_POST['attachment_id']) ? intval($_POST['attachment_id']) : 0;
+        $attachment_id = isset($_POST['attachment_id']) ? intval(wp_unslash($_POST['attachment_id'])) : 0;
         
         if (!$attachment_id) {
             wp_send_json_error(array('message' => __('Invalid attachment ID.', 'w3a11y-artisan')));

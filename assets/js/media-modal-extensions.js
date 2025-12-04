@@ -603,7 +603,13 @@
                     attachment_id: attachmentData.attachmentId
                 }).forEach(([key, value]) => formData.append(key, value));
 
-                fetch(window.w3a11yAltTextAjax?.ajax_url || '/wp-admin/admin-ajax.php', {
+                const ajaxUrl = window.w3a11yAltTextAjax?.ajax_url || window.ajaxurl;
+                if (!ajaxUrl) {
+                    console.error('W3A11Y: No AJAX URL available');
+                    return;
+                }
+
+                fetch(ajaxUrl, {
                     method: 'POST',
                     body: formData
                 })
@@ -670,10 +676,11 @@
              * @param {number} availableCredits - Available credits count
              */
             triggerCentralizedNotification: function (message, type = 'error', statusCode = 0, availableCredits = 0) {
-                // Use WordPress AJAX (ensure w3a11yArtisan is available)
+                // Use WordPress AJAX URL from localized script or global ajaxurl
                 const ajaxUrl = (window.w3a11yArtisan && window.w3a11yArtisan.ajax_url) ||
+                    (window.w3a11yAltTextAjax && window.w3a11yAltTextAjax.ajax_url) ||
                     (window.ajaxurl) ||
-                    '/wp-admin/admin-ajax.php';
+                    '';
 
                 // Try to get nonce from multiple sources
                 const nonce = (window.w3a11yArtisan && window.w3a11yArtisan.nonce) ||

@@ -256,12 +256,12 @@ $w3a11y_inline_style = "
 ";
 wp_add_inline_style('wp-admin', $w3a11y_inline_style);
 
-// Add inline JavaScript directly
+// Add inline JavaScript using wp_add_inline_script
 $w3a11y_settings_data = get_option('w3a11y_artisan_settings', array());
 $w3a11y_nonce = wp_create_nonce('w3a11y_artisan_nonce');
 $w3a11y_has_api_key = !empty($w3a11y_settings_data['api_key']);
-?>
-<script type="text/javascript">
+
+$w3a11y_inline_js = "
 document.addEventListener('DOMContentLoaded', function() {
     // Update API status when key is validated
     document.addEventListener('w3a11y_api_validated', function(e) {
@@ -270,8 +270,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var statusElement = document.getElementById('w3a11y-api-status');
             if (statusElement) {
                 statusElement.innerHTML = 
-                    '<p style="color: #46b450;"><span class="dashicons dashicons-yes-alt"></span> ' +
-                    '<?php echo esc_js(__('API key validated successfully', 'w3a11y-artisan')); ?></p>';
+                    '<p style=\"color: #46b450;\"><span class=\"dashicons dashicons-yes-alt\"></span> ' +
+                    '" . esc_js(__('API key validated successfully', 'w3a11y-artisan')) . "</p>';
             }
             
             // Try to load credits info
@@ -280,14 +280,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Load credits info if API key is configured
-    <?php if ($w3a11y_has_api_key) : ?>
-    loadCreditsInfo();
-    <?php endif; ?>
+    " . ($w3a11y_has_api_key ? "loadCreditsInfo();" : "") . "
     
     function loadCreditsInfo() {
         var formData = new FormData();
         formData.append('action', 'w3a11y_artisan_credits');
-        formData.append('nonce', '<?php echo esc_js($w3a11y_nonce); ?>');
+        formData.append('nonce', '" . esc_js($w3a11y_nonce) . "');
         
         fetch(ajaxurl, {
             method: 'POST',
@@ -301,11 +299,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (creditsElement) {
                 if (response.success && response.data.credits !== undefined) {
                     creditsElement.innerHTML = 
-                        '<p><strong><?php echo esc_js(__('Available Credits:', 'w3a11y-artisan')); ?></strong> ' + 
+                        '<p><strong>" . esc_js(__('Available Credits:', 'w3a11y-artisan')) . "</strong> ' + 
                         response.data.credits + '</p>';
                 } else {
                     creditsElement.innerHTML = 
-                        '<p><em><?php echo esc_js(__('Unable to load credit information', 'w3a11y-artisan')); ?></em></p>';
+                        '<p><em>" . esc_js(__('Unable to load credit information', 'w3a11y-artisan')) . "</em></p>';
                 }
             }
         })
@@ -313,10 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var creditsElement = document.getElementById('w3a11y-credits-info');
             if (creditsElement) {
                 creditsElement.innerHTML = 
-                    '<p><em><?php echo esc_js(__('Unable to load credit information', 'w3a11y-artisan')); ?></em></p>';
+                    '<p><em>" . esc_js(__('Unable to load credit information', 'w3a11y-artisan')) . "</em></p>';
             }
         });
     }
 });
-</script>
-<?php
+";
+wp_add_inline_script('w3a11y-artisan-inline', $w3a11y_inline_js);

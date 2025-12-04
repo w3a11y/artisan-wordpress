@@ -317,8 +317,7 @@ class W3A11Y_Notification_Manager {
         $js_added = true;
         
         $nonce = wp_create_nonce('w3a11y_dismiss_notice');
-        ?>
-        <script type="text/javascript">
+        $inline_script = "
         document.addEventListener('DOMContentLoaded', function() {
             // Handle dismissible notices
             document.querySelectorAll('.notice.is-dismissible[data-notice-id]').forEach(function(notice) {
@@ -331,7 +330,7 @@ class W3A11Y_Notification_Manager {
                             var formData = new FormData();
                             formData.append('action', 'w3a11y_dismiss_notice');
                             formData.append('notice_id', noticeId);
-                            formData.append('nonce', '<?php echo esc_js($nonce); ?>');
+                            formData.append('nonce', '" . esc_js($nonce) . "');
                             
                             fetch(ajaxurl, {
                                 method: 'POST',
@@ -342,8 +341,8 @@ class W3A11Y_Notification_Manager {
                 }
             });
         });
-        </script>
-        <?php
+        ";
+        wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
     }
     
     /**
@@ -357,7 +356,6 @@ class W3A11Y_Notification_Manager {
             wp_die('Security check failed.');
         }
         
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Validated and sanitized below
         $notice_id = isset($_POST['notice_id']) ? sanitize_text_field(wp_unslash($_POST['notice_id'])) : '';
         $dismissed_notices = get_option('w3a11y_dismissed_notices', array());
         $dismissed_notices[$notice_id] = time();
@@ -487,8 +485,8 @@ class W3A11Y_Notification_Manager {
         }
         ";
         wp_add_inline_style('wp-admin', $inline_style);
-        ?>
-        <script type="text/javascript">
+        
+        $inline_script = "
         if (typeof window.W3A11YNotifications === 'undefined') {
             window.W3A11YNotifications = {
                 /**
@@ -513,16 +511,16 @@ class W3A11Y_Notification_Manager {
                         'box-shadow: 0 2px 5px rgba(0,0,0,0.2);' +
                         'padding: 12px 16px;' +
                         'border-radius: 3px;' +
-                        'font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,sans-serif;' +
+                        'font-family: -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Oxygen-Sans,Ubuntu,Cantarell,sans-serif;' +
                         'font-size: 13px;' +
                         'line-height: 1.4;'
 
                     notification.innerHTML = 
-                        '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-                            '<div style="flex: 1; margin-right: 10px;">' +
+                        '<div style=\"display: flex; justify-content: space-between; align-items: center;\">' +
+                            '<div style=\"flex: 1; margin-right: 10px;\">' +
                                 '<strong>W3A11Y:</strong> ' + message +
                             '</div>' +
-                            '<button type="button" style="background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.5;" title="Dismiss">×</button>' +
+                            '<button type=\"button\" style=\"background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.5;\" title=\"Dismiss\">×</button>' +
                         '</div>';
 
                     // Add dismiss functionality
@@ -574,8 +572,8 @@ class W3A11Y_Notification_Manager {
                 }
             };
         }
-        </script>
-        <?php
+        ";
+        wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
     }
     
     /**

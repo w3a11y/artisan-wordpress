@@ -11,7 +11,7 @@
  * Text Domain: w3a11y-artisan
  * Domain Path: /languages
  * Requires at least: 5.0
- * Tested up to: 6.8
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  *
  * @package W3A11Y_Artisan
@@ -267,6 +267,17 @@ class W3A11Y_Artisan {
         if (!in_array($hook_suffix, $relevant_pages) && strpos($hook_suffix, 'w3a11y') === false) {
             return;
         }
+        
+        // Register a minimal inline script handler for pages that need inline scripts
+        // This allows us to use wp_add_inline_script() properly
+        wp_register_script(
+            'w3a11y-artisan-inline',
+            false, // No file - just a placeholder for inline scripts
+            array(),
+            W3A11Y_ARTISAN_VERSION,
+            true
+        );
+        wp_enqueue_script('w3a11y-artisan-inline');
         
         // Note: JavaScript files are now enqueued by W3A11Y_Artisan_Media_Integration class
         // to avoid conflicts and ensure proper loading conditions

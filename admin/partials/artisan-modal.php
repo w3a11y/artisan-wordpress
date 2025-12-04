@@ -417,7 +417,9 @@ $w3a11y_default_style = isset($w3a11y_settings['default_style']) ? $w3a11y_setti
     <input type="hidden" id="w3a11y-modal-mode" value="generate" /> <!-- generate or edit -->
 </div>
 
-<script type="text/javascript">
+<?php
+// Add inline script using wp_add_inline_script
+$w3a11y_modal_script = "
 // Initialize modal functionality when document is ready
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the modal system
@@ -442,4 +444,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Modal will be fully initialized by the main JavaScript file
     console.log('W3A11Y Artisan modal template loaded');
 });
-</script>
+";
+wp_add_inline_script('w3a11y-artisan-inline', $w3a11y_modal_script);
+?>

@@ -43,6 +43,90 @@ class W3A11Y_Artisan_API_Handler {
     }
     
     /**
+     * Sanitize and validate base64 image data
+     * 
+     * @param string $base64_data The base64 encoded image data.
+     * @return string|false Sanitized base64 data or false if invalid.
+     * @since 1.1.0
+     */
+    private static function sanitize_base64_image($base64_data) {
+        if (empty($base64_data)) {
+            return '';
+        }
+        
+        // Remove any whitespace
+        $base64_data = preg_replace('/\s+/', '', $base64_data);
+        
+        // Handle data URI format (data:image/png;base64,...)
+        if (strpos($base64_data, 'data:image/') === 0) {
+            $parts = explode(',', $base64_data, 2);
+            if (count($parts) === 2) {
+                // Validate the data URI header
+                if (!preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64$/', $parts[0])) {
+                    return false;
+                }
+                $base64_data = $parts[1];
+            }
+        }
+        
+        // Validate base64 characters (A-Z, a-z, 0-9, +, /, =)
+        if (!preg_match('/^[A-Za-z0-9+\/=]+$/', $base64_data)) {
+            return false;
+        }
+        
+        // Validate that it decodes properly
+        $decoded = base64_decode($base64_data, true);
+        if ($decoded === false) {
+            return false;
+        }
+        
+        // Validate minimum size (at least some bytes for a valid image)
+        if (strlen($decoded) < 100) {
+            return false;
+        }
+        
+        return $base64_data;
+    }
+    
+    /**
+     * Sanitize selection area data
+     * 
+     * @param mixed $selection_area The selection area data (JSON string or array).
+     * @return array|null Sanitized selection area array or null if invalid.
+     * @since 1.1.0
+     */
+    private static function sanitize_selection_area($selection_area) {
+        if (empty($selection_area)) {
+            return null;
+        }
+        
+        // If it's a string, try to decode it
+        if (is_string($selection_area)) {
+            $selection_area = json_decode(sanitize_text_field(wp_unslash($selection_area)), true);
+        }
+        
+        // Validate it's an array with required keys
+        if (!is_array($selection_area)) {
+            return null;
+        }
+        
+        $required_keys = array('x', 'y', 'width', 'height');
+        foreach ($required_keys as $key) {
+            if (!isset($selection_area[$key])) {
+                return null;
+            }
+        }
+        
+        // Return sanitized values
+        return array(
+            'x' => floatval($selection_area['x']),
+            'y' => floatval($selection_area['y']),
+            'width' => floatval($selection_area['width']),
+            'height' => floatval($selection_area['height'])
+        );
+    }
+    
+    /**
      * Constructor
      * 
      * @since 1.0.0
@@ -77,19 +161,33 @@ class W3A11Y_Artisan_API_Handler {
             $ref_images_json = sanitize_text_field(wp_unslash($_POST['referenceImagesBase64']));
             $ref_images_array = json_decode($ref_images_json, true);
             if (is_array($ref_images_array) && count($ref_images_array) <= 3) {
-                $reference_images_base64 = array_slice($ref_images_array, 0, 3); // Max 3 images
+                // Sanitize each base64 image
+                foreach (array_slice($ref_images_array, 0, 3) as $ref_image) {
+                    $sanitized = self::sanitize_base64_image($ref_image);
+                    if ($sanitized !== false && !empty($sanitized)) {
+                        $reference_images_base64[] = $sanitized;
+                    }
+                }
             }
         } elseif (isset($_POST['reference_images_base64'])) {
             // Fallback: snake_case format
             $ref_images_json = sanitize_text_field(wp_unslash($_POST['reference_images_base64']));
             $ref_images_array = json_decode($ref_images_json, true);
             if (is_array($ref_images_array) && count($ref_images_array) <= 3) {
-                $reference_images_base64 = array_slice($ref_images_array, 0, 3); // Max 3 images
+                // Sanitize each base64 image
+                foreach (array_slice($ref_images_array, 0, 3) as $ref_image) {
+                    $sanitized = self::sanitize_base64_image($ref_image);
+                    if ($sanitized !== false && !empty($sanitized)) {
+                        $reference_images_base64[] = $sanitized;
+                    }
+                }
             }
         } elseif (isset($_POST['reference_image_base64']) && !empty($_POST['reference_image_base64'])) {
-            // Legacy format: single base64 image - base64 data should not be slashed or sanitized (it's binary data)
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Base64 image data, sanitization would corrupt it
-            $reference_images_base64 = array(wp_unslash($_POST['reference_image_base64']));
+            // Legacy format: single base64 image
+            $sanitized = self::sanitize_base64_image(sanitize_textarea_field(wp_unslash($_POST['reference_image_base64'])));
+            if ($sanitized !== false && !empty($sanitized)) {
+                $reference_images_base64 = array($sanitized);
+            }
         }
         
         $style = isset($_POST['style']) ? sanitize_text_field(wp_unslash($_POST['style'])) : 'photorealistic';
@@ -97,8 +195,8 @@ class W3A11Y_Artisan_API_Handler {
         
         // Get aspect ratio and dimensions from the request
         $aspect_ratio = isset($_POST['aspect_ratio']) ? sanitize_text_field(wp_unslash($_POST['aspect_ratio'])) : '1:1';
-        $width = isset($_POST['width']) ? intval($_POST['width']) : 1024;
-        $height = isset($_POST['height']) ? intval($_POST['height']) : 1024;
+        $width = isset($_POST['width']) ? intval(wp_unslash($_POST['width'])) : 1024;
+        $height = isset($_POST['height']) ? intval(wp_unslash($_POST['height'])) : 1024;
         
         // Validate prompt
         if (empty($prompt) || strlen($prompt) < 10) {
@@ -154,7 +252,6 @@ class W3A11Y_Artisan_API_Handler {
         
         // Debug: Log what reference images we have
         W3A11Y_Artisan::log('Reference images count: ' . count($reference_images_base64), 'debug');
-        W3A11Y_Artisan::log('$_POST keys: ' . implode(', ', array_keys($_POST)), 'debug');
 
         // Add reference images if provided (max 3)
         if (!empty($reference_images_base64)) {
@@ -236,8 +333,13 @@ class W3A11Y_Artisan_API_Handler {
         
         // Validate and sanitize input
         $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Base64 image data, sanitization would corrupt it
-        $image_base64 = isset($_POST['image_base64']) ? wp_unslash($_POST['image_base64']) : '';
+        
+        // Sanitize base64 image data
+        $image_base64_raw = isset($_POST['image_base64']) ? sanitize_textarea_field(wp_unslash($_POST['image_base64'])) : '';
+        $image_base64 = self::sanitize_base64_image($image_base64_raw);
+        if ($image_base64 === false) {
+            wp_send_json_error(array('message' => __('Invalid image data format.', 'w3a11y-artisan')));
+        }
         
         // Handle multiple reference images (backwards compatible)
         $reference_images_base64 = array();
@@ -246,23 +348,37 @@ class W3A11Y_Artisan_API_Handler {
             $ref_images_json = sanitize_text_field(wp_unslash($_POST['referenceImagesBase64']));
             $ref_images_array = json_decode($ref_images_json, true);
             if (is_array($ref_images_array) && count($ref_images_array) <= 3) {
-                $reference_images_base64 = array_slice($ref_images_array, 0, 3); // Max 3 images
+                foreach (array_slice($ref_images_array, 0, 3) as $ref_image) {
+                    $sanitized = self::sanitize_base64_image($ref_image);
+                    if ($sanitized !== false && !empty($sanitized)) {
+                        $reference_images_base64[] = $sanitized;
+                    }
+                }
             }
         } elseif (isset($_POST['reference_images_base64'])) {
             // Fallback: snake_case format
             $ref_images_json = sanitize_text_field(wp_unslash($_POST['reference_images_base64']));
             $ref_images_array = json_decode($ref_images_json, true);
             if (is_array($ref_images_array) && count($ref_images_array) <= 3) {
-                $reference_images_base64 = array_slice($ref_images_array, 0, 3); // Max 3 images
+                foreach (array_slice($ref_images_array, 0, 3) as $ref_image) {
+                    $sanitized = self::sanitize_base64_image($ref_image);
+                    if ($sanitized !== false && !empty($sanitized)) {
+                        $reference_images_base64[] = $sanitized;
+                    }
+                }
             }
         } elseif (isset($_POST['reference_image_base64']) && !empty($_POST['reference_image_base64'])) {
-            // Legacy format: single base64 image - base64 data should not be sanitized (it's binary data)
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Base64 image data
-            $reference_images_base64 = array(wp_unslash($_POST['reference_image_base64']));
+            // Legacy format: single base64 image
+            $sanitized = self::sanitize_base64_image(sanitize_textarea_field(wp_unslash($_POST['reference_image_base64'])));
+            if ($sanitized !== false && !empty($sanitized)) {
+                $reference_images_base64 = array($sanitized);
+            }
         }
         $edit_type = isset($_POST['edit_type']) ? sanitize_text_field(wp_unslash($_POST['edit_type'])) : 'modify';
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- JSON data validated below
-        $selection_area = isset($_POST['selection_area']) ? wp_unslash($_POST['selection_area']) : null;
+        
+        // Sanitize selection area
+        $selection_area_raw = isset($_POST['selection_area']) ? wp_unslash($_POST['selection_area']) : null;
+        $selection_area = self::sanitize_selection_area($selection_area_raw);
         
         // Get aspect ratio from the request (missing in original edit implementation!)
         $aspect_ratio = isset($_POST['aspect_ratio']) ? sanitize_text_field(wp_unslash($_POST['aspect_ratio'])) : '1:1';
@@ -312,13 +428,9 @@ class W3A11Y_Artisan_API_Handler {
             }
         }
         
-        if ($selection_area && is_array($selection_area)) {
-            $request_data['selectionArea'] = array(
-                'x' => floatval($selection_area['x']),
-                'y' => floatval($selection_area['y']),
-                'width' => floatval($selection_area['width']),
-                'height' => floatval($selection_area['height'])
-            );
+        // Add selection area if provided (already sanitized)
+        if ($selection_area !== null) {
+            $request_data['selectionArea'] = $selection_area;
         }
         
         // Make API request
@@ -329,7 +441,7 @@ class W3A11Y_Artisan_API_Handler {
             $image_hash = md5($image_base64);
             
             // Try to get attachment_id if this image came from WordPress media library
-            $attachment_id = isset($_POST['attachment_id']) ? intval($_POST['attachment_id']) : null;
+            $attachment_id = isset($_POST['attachment_id']) ? intval(wp_unslash($_POST['attachment_id'])) : null;
             
             // Debug logging
             W3A11Y_Artisan::log("Saving edit prompt - user_id=" . get_current_user_id() . ", prompt='$prompt', attachment_id=$attachment_id, image_hash=$image_hash", 'debug');
@@ -374,8 +486,8 @@ class W3A11Y_Artisan_API_Handler {
         }
         
         // Validate and sanitize input
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Base64 image data must not be sanitized as it would corrupt the binary data
-        $image_base64 = isset($_POST['image_base64']) ? $_POST['image_base64'] : '';
+        $raw_base64 = isset($_POST['image_base64']) ? sanitize_textarea_field(wp_unslash($_POST['image_base64'])) : '';
+        $image_base64 = self::sanitize_base64_image($raw_base64);
         
         // Validate image base64
         if (empty($image_base64)) {
@@ -478,13 +590,13 @@ class W3A11Y_Artisan_API_Handler {
         }
         
         // Validate and sanitize input
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Base64 image data must not be sanitized as it would corrupt the binary data
-        $image_base64 = isset($_POST['image_base64']) ? $_POST['image_base64'] : '';
+        $raw_base64 = isset($_POST['image_base64']) ? sanitize_textarea_field(wp_unslash($_POST['image_base64'])) : '';
+        $image_base64 = self::sanitize_base64_image($raw_base64);
         $filename = isset($_POST['filename']) ? sanitize_file_name(wp_unslash($_POST['filename'])) : '';
         $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
         $alt_text = isset($_POST['alt_text']) ? sanitize_text_field(wp_unslash($_POST['alt_text'])) : '';
-        $replace_existing = isset($_POST['replace_existing']) ? (bool) $_POST['replace_existing'] : false;
-        $existing_attachment_id = isset($_POST['existing_attachment_id']) ? intval($_POST['existing_attachment_id']) : 0;
+        $replace_existing = isset($_POST['replace_existing']) ? (bool) wp_unslash($_POST['replace_existing']) : false;
+        $existing_attachment_id = isset($_POST['existing_attachment_id']) ? intval(wp_unslash($_POST['existing_attachment_id'])) : 0;
         
         // Validate image data
         if (empty($image_base64)) {
@@ -808,8 +920,7 @@ class W3A11Y_Artisan_API_Handler {
             wp_send_json_error(array('message' => __('Insufficient permissions.', 'w3a11y-artisan')));
         }
         
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- Validated with intval() below
-        $attachment_id = isset($_POST['attachment_id']) ? intval($_POST['attachment_id']) : 0;
+        $attachment_id = isset($_POST['attachment_id']) ? intval(wp_unslash($_POST['attachment_id'])) : 0;
         
         if (!$attachment_id) {
             wp_send_json_error(array('message' => __('Invalid attachment ID.', 'w3a11y-artisan')));
@@ -869,11 +980,11 @@ class W3A11Y_Artisan_API_Handler {
         }
         
         // Validate and sanitize input
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Base64 image data must not be sanitized as it would corrupt the binary data
-        $image_base64 = isset($_POST['image_base64']) ? $_POST['image_base64'] : '';
+        $raw_base64 = isset($_POST['image_base64']) ? sanitize_textarea_field(wp_unslash($_POST['image_base64'])) : '';
+        $image_base64 = self::sanitize_base64_image($raw_base64);
         $output_format = isset($_POST['output_format']) ? sanitize_text_field(wp_unslash($_POST['output_format'])) : 'png';
-        $quality = isset($_POST['quality']) ? intval($_POST['quality']) : 90;
-        $remove_background = isset($_POST['remove_background']) ? (bool) $_POST['remove_background'] : false;
+        $quality = isset($_POST['quality']) ? intval(wp_unslash($_POST['quality'])) : 90;
+        $remove_background = isset($_POST['remove_background']) ? (bool) wp_unslash($_POST['remove_background']) : false;
         
         // Validate image base64
         if (empty($image_base64)) {
@@ -928,8 +1039,8 @@ class W3A11Y_Artisan_API_Handler {
         }
         
         $operation_type = isset($_POST['operation_type']) ? sanitize_text_field(wp_unslash($_POST['operation_type'])) : null;
-        $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
-        $attachment_id = isset($_POST['attachment_id']) ? intval($_POST['attachment_id']) : null;
+        $limit = isset($_POST['limit']) ? intval(wp_unslash($_POST['limit'])) : 20;
+        $attachment_id = isset($_POST['attachment_id']) ? intval(wp_unslash($_POST['attachment_id'])) : null;
         $image_hash = isset($_POST['image_hash']) ? sanitize_text_field(wp_unslash($_POST['image_hash'])) : null;
 
         // Debug logging

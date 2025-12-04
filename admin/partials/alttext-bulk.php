@@ -327,22 +327,21 @@ $w3a11y_settings = get_option('w3a11y_artisan_settings', array());
 </div>
 
 <?php
-// Enqueue inline script
+// Enqueue inline script using wp_add_inline_script
 $w3a11y_nonce = wp_create_nonce('w3a11y_artisan_nonce');
-?>
-<script type="text/javascript">
+$w3a11y_inline_js = "
     // Pass configuration to JavaScript
     window.w3a11yAltTextAjax = {
-        ajax_url: '<?php echo esc_url(admin_url('admin-ajax.php')); ?>',
-        nonce: '<?php echo esc_js($w3a11y_nonce); ?>',
-        batch_size: <?php echo esc_js($w3a11y_alttext_handler->batch_config['batch_size']); ?>,
-        batch_delay: <?php echo esc_js($w3a11y_alttext_handler->batch_config['batch_delay_ms']); ?>,
-        generating_text: '<?php echo esc_js(__('Generating...', 'w3a11y-artisan')); ?>',
+        ajax_url: '" . esc_url(admin_url('admin-ajax.php')) . "',
+        nonce: '" . esc_js($w3a11y_nonce) . "',
+        batch_size: " . intval($w3a11y_alttext_handler->batch_config['batch_size']) . ",
+        batch_delay: " . intval($w3a11y_alttext_handler->batch_config['batch_delay_ms']) . ",
+        generating_text: '" . esc_js(__('Generating...', 'w3a11y-artisan')) . "',
         strings: {
-            processing: '<?php echo esc_js(__('Processing...', 'w3a11y-artisan')); ?>',
-            completed: '<?php echo esc_js(__('Completed!', 'w3a11y-artisan')); ?>',
-            cancelled: '<?php echo esc_js(__('Cancelled', 'w3a11y-artisan')); ?>',
-            error: '<?php echo esc_js(__('Error occurred', 'w3a11y-artisan')); ?>'
+            processing: '" . esc_js(__('Processing...', 'w3a11y-artisan')) . "',
+            completed: '" . esc_js(__('Completed!', 'w3a11y-artisan')) . "',
+            cancelled: '" . esc_js(__('Cancelled', 'w3a11y-artisan')) . "',
+            error: '" . esc_js(__('Error occurred', 'w3a11y-artisan')) . "'
         }
     };
     
@@ -368,4 +367,6 @@ $w3a11y_nonce = wp_create_nonce('w3a11y_artisan_nonce');
             }
         }
     });
-</script>
+";
+wp_add_inline_script('w3a11y-artisan-inline', $w3a11y_inline_js);
+?>

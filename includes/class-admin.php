@@ -544,11 +544,11 @@ class W3A11Y_Artisan_Admin {
             echo '<textarea id="w3a11y-log-content" style="width: 100%; height: 300px; font-family: monospace; font-size: 11px;" readonly placeholder="' . esc_html(__('Click View Logs to see debug information...', 'w3a11y-artisan')) . '"></textarea>';
             echo '</div>';
             
-            // Add JavaScript for log management
+            // Add JavaScript for log management using wp_add_inline_script
             $nonce = wp_create_nonce('w3a11y_logs');
             $download_url = admin_url('admin-ajax.php?action=w3a11y_download_logs&nonce=' . $nonce);
-            ?>
-            <script type="text/javascript">
+            
+            $inline_script = "
             window.w3a11yViewLogs = function() {
                 const textarea = document.getElementById('w3a11y-log-content');
                 const button = event.target;
@@ -560,7 +560,7 @@ class W3A11Y_Artisan_Admin {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: 'action=w3a11y_view_logs&nonce=<?php echo esc_js($nonce); ?>'
+                    body: 'action=w3a11y_view_logs&nonce=" . esc_js($nonce) . "'
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -573,36 +573,36 @@ class W3A11Y_Artisan_Admin {
                 })
                 .finally(() => {
                     button.disabled = false;
-                    button.textContent = '<?php echo esc_js(__('View Logs', 'w3a11y-artisan')); ?>';
+                    button.textContent = '" . esc_js(__('View Logs', 'w3a11y-artisan')) . "';
                 });
             };
             
             window.w3a11yDownloadLogs = function() {
-                window.open('<?php echo esc_url($download_url); ?>');
+                window.open('" . esc_url($download_url) . "');
             };
             
             window.w3a11yClearLogs = function() {
-                if (confirm('<?php echo esc_js(__('Are you sure you want to clear all logs?', 'w3a11y-artisan')); ?>')) {
+                if (confirm('" . esc_js(__('Are you sure you want to clear all logs?', 'w3a11y-artisan')) . "')) {
                     fetch(ajaxurl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
-                        body: 'action=w3a11y_clear_logs&nonce=<?php echo esc_js($nonce); ?>'
+                        body: 'action=w3a11y_clear_logs&nonce=" . esc_js($nonce) . "'
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             document.getElementById('w3a11y-log-content').value = '';
-                            alert('<?php echo esc_js(__('Logs cleared successfully.', 'w3a11y-artisan')); ?>');
+                            alert('" . esc_js(__('Logs cleared successfully.', 'w3a11y-artisan')) . "');
                         } else {
                             alert('Error: ' + data.data);
                         }
                     });
                 }
             };
-            </script>
-            <?php
+            ";
+            wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
         }
     }
     
@@ -942,8 +942,7 @@ class W3A11Y_Artisan_Admin {
      */
     private function api_key_inline_js() {
         $nonce = wp_create_nonce('w3a11y_validate_api_key');
-        ?>
-        <script type="text/javascript">
+        $inline_script = "
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle API key visibility
             var toggleButton = document.getElementById('toggle-api-key');
@@ -977,19 +976,19 @@ class W3A11Y_Artisan_Admin {
                     var apiKey = apiKeyField.value;
                     
                     if (!apiKey.trim()) {
-                        resultDiv.innerHTML = '<div class="notice notice-error inline"><p><?php echo esc_js(__('Please enter an API key first.', 'w3a11y-artisan')); ?></p></div>';
+                        resultDiv.innerHTML = '<div class=\"notice notice-error inline\"><p>" . esc_js(__('Please enter an API key first.', 'w3a11y-artisan')) . "</p></div>';
                         return;
                     }
                     
                     validateButton.disabled = true;
-                    validateButton.textContent = '<?php echo esc_js(__('Validating...', 'w3a11y-artisan')); ?>';
-                    resultDiv.innerHTML = '<div class="notice notice-info inline"><p><?php echo esc_js(__('Validating API key...', 'w3a11y-artisan')); ?></p></div>';
+                    validateButton.textContent = '" . esc_js(__('Validating...', 'w3a11y-artisan')) . "';
+                    resultDiv.innerHTML = '<div class=\"notice notice-info inline\"><p>" . esc_js(__('Validating API key...', 'w3a11y-artisan')) . "</p></div>';
                     
                     // Create form data
                     var formData = new FormData();
                     formData.append('action', 'w3a11y_validate_api_key');
                     formData.append('api_key', apiKey);
-                    formData.append('nonce', '<?php echo esc_js($nonce); ?>');
+                    formData.append('nonce', '" . esc_js($nonce) . "');
                     
                     // Send AJAX request
                     fetch(ajaxurl, {
@@ -1001,10 +1000,10 @@ class W3A11Y_Artisan_Admin {
                     })
                     .then(function(response) {
                         validateButton.disabled = false;
-                        validateButton.textContent = '<?php echo esc_js(__('Validate', 'w3a11y-artisan')); ?>';
+                        validateButton.textContent = '" . esc_js(__('Validate', 'w3a11y-artisan')) . "';
                         
                         if (response.success) {
-                            resultDiv.innerHTML = '<div class="notice notice-success inline"><p><span class="dashicons dashicons-yes-alt"></span> ' + response.data.message + '</p></div>';
+                            resultDiv.innerHTML = '<div class=\"notice notice-success inline\"><p><span class=\"dashicons dashicons-yes-alt\"></span> ' + response.data.message + '</p></div>';
                             
                             // Trigger custom event for other scripts
                             var event = new CustomEvent('w3a11y_api_validated', {
@@ -1012,19 +1011,19 @@ class W3A11Y_Artisan_Admin {
                             });
                             document.dispatchEvent(event);
                         } else {
-                            resultDiv.innerHTML = '<div class="notice notice-error inline"><p><span class="dashicons dashicons-no-alt"></span> ' + response.data.message + '</p></div>';
+                            resultDiv.innerHTML = '<div class=\"notice notice-error inline\"><p><span class=\"dashicons dashicons-no-alt\"></span> ' + response.data.message + '</p></div>';
                         }
                     })
                     .catch(function() {
                         validateButton.disabled = false;
-                        validateButton.textContent = '<?php echo esc_js(__('Validate', 'w3a11y-artisan')); ?>';
-                        resultDiv.innerHTML = '<div class="notice notice-error inline"><p><?php echo esc_js(__('Validation request failed. Please try again.', 'w3a11y-artisan')); ?></p></div>';
+                        validateButton.textContent = '" . esc_js(__('Validate', 'w3a11y-artisan')) . "';
+                        resultDiv.innerHTML = '<div class=\"notice notice-error inline\"><p>" . esc_js(__('Validation request failed. Please try again.', 'w3a11y-artisan')) . "</p></div>';
                     });
                 });
             }
         });
-        </script>
-        <?php
+        ";
+        wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
     }
     
     /**
