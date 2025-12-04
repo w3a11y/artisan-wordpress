@@ -377,7 +377,7 @@ class W3A11Y_Artisan_API_Handler {
         $edit_type = isset($_POST['edit_type']) ? sanitize_text_field(wp_unslash($_POST['edit_type'])) : 'modify';
         
         // Sanitize selection area
-        $selection_area_raw = isset($_POST['selection_area']) ? wp_unslash($_POST['selection_area']) : null;
+        $selection_area_raw = isset($_POST['selection_area']) ? sanitize_text_field(wp_unslash($_POST['selection_area'])) : null;
         $selection_area = self::sanitize_selection_area($selection_area_raw);
         
         // Get aspect ratio from the request (missing in original edit implementation!)
@@ -595,7 +595,7 @@ class W3A11Y_Artisan_API_Handler {
         $filename = isset($_POST['filename']) ? sanitize_file_name(wp_unslash($_POST['filename'])) : '';
         $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
         $alt_text = isset($_POST['alt_text']) ? sanitize_text_field(wp_unslash($_POST['alt_text'])) : '';
-        $replace_existing = isset($_POST['replace_existing']) ? (bool) wp_unslash($_POST['replace_existing']) : false;
+        $replace_existing = isset($_POST['replace_existing']) ? filter_var(sanitize_text_field(wp_unslash($_POST['replace_existing'])), FILTER_VALIDATE_BOOLEAN) : false;
         $existing_attachment_id = isset($_POST['existing_attachment_id']) ? intval(wp_unslash($_POST['existing_attachment_id'])) : 0;
         
         // Validate image data
@@ -984,7 +984,7 @@ class W3A11Y_Artisan_API_Handler {
         $image_base64 = self::sanitize_base64_image($raw_base64);
         $output_format = isset($_POST['output_format']) ? sanitize_text_field(wp_unslash($_POST['output_format'])) : 'png';
         $quality = isset($_POST['quality']) ? intval(wp_unslash($_POST['quality'])) : 90;
-        $remove_background = isset($_POST['remove_background']) ? (bool) wp_unslash($_POST['remove_background']) : false;
+        $remove_background = isset($_POST['remove_background']) ? filter_var(sanitize_text_field(wp_unslash($_POST['remove_background'])), FILTER_VALIDATE_BOOLEAN) : false;
         
         // Validate image base64
         if (empty($image_base64)) {
