@@ -198,6 +198,10 @@ class W3A11Y_Artisan_API_Handler {
         $width = isset($_POST['width']) ? intval(wp_unslash($_POST['width'])) : 1024;
         $height = isset($_POST['height']) ? intval(wp_unslash($_POST['height'])) : 1024;
         
+        // Get resolution and Google Search grounding options
+        $resolution = isset($_POST['resolution']) ? sanitize_text_field(wp_unslash($_POST['resolution'])) : '1K';
+        $use_google_search = isset($_POST['use_google_search']) && $_POST['use_google_search'] === 'true';
+        
         // Validate prompt
         if (empty($prompt) || strlen($prompt) < 10) {
             wp_send_json_error(array('message' => __('Please provide a detailed prompt (minimum 10 characters)) . ', 'w3a11y-artisan')));
@@ -217,6 +221,12 @@ class W3A11Y_Artisan_API_Handler {
         $valid_qualities = array('standard', 'hd');
         if (!in_array($quality, $valid_qualities)) {
             $quality = 'standard';
+        }
+        
+        // Validate resolution (1K, 2K, 4K)
+        $valid_resolutions = array('1K', '2K', '4K');
+        if (!in_array($resolution, $valid_resolutions)) {
+            $resolution = '1K';
         }
         
         // Validate aspect ratio and ensure dimensions are valid
@@ -247,13 +257,15 @@ class W3A11Y_Artisan_API_Handler {
             'style' => $style,
             'quality' => $quality,
             'aspect_ratio' => $aspect_ratio,
-            'dimensions' => $dimensions
+            'dimensions' => $dimensions,
+            'resolution' => $resolution,
+            'useGoogleSearch' => $use_google_search
         );
         
         // Debug: Log what reference images we have
         W3A11Y_Artisan::log('Reference images count: ' . count($reference_images_base64), 'debug');
 
-        // Add reference images if provided (max 3)
+        // Add reference images if provided (max 13)
         if (!empty($reference_images_base64)) {
             if (count($reference_images_base64) === 1) {
                 // Single image - use legacy format for backwards compatibility
@@ -383,6 +395,10 @@ class W3A11Y_Artisan_API_Handler {
         // Get aspect ratio from the request (missing in original edit implementation!)
         $aspect_ratio = isset($_POST['aspect_ratio']) ? sanitize_text_field(wp_unslash($_POST['aspect_ratio'])) : '1:1';
         
+        // Get resolution and Google Search grounding options
+        $resolution = isset($_POST['resolution']) ? sanitize_text_field(wp_unslash($_POST['resolution'])) : '1K';
+        $use_google_search = isset($_POST['use_google_search']) && $_POST['use_google_search'] === 'true';
+        
         // Validate prompt
         if (empty($prompt) || strlen($prompt) < 5) {
             wp_send_json_error(array('message' => __('Please provide an editing instruction (minimum 5 characters)) . ', 'w3a11y-artisan')));
@@ -409,15 +425,23 @@ class W3A11Y_Artisan_API_Handler {
             $aspect_ratio = '1:1';
         }
         
+        // Validate resolution (1K, 2K, 4K)
+        $valid_resolutions = array('1K', '2K', '4K');
+        if (!in_array($resolution, $valid_resolutions)) {
+            $resolution = '1K';
+        }
+        
         // Prepare API request data
         $request_data = array(
             'prompt' => $prompt,
             'imageBase64' => $image_base64,
             'editType' => $edit_type,
-            'aspect_ratio' => $aspect_ratio
+            'aspect_ratio' => $aspect_ratio,
+            'resolution' => $resolution,
+            'useGoogleSearch' => $use_google_search
         );
         
-        // Add reference images if provided (max 3)
+        // Add reference images if provided (max 13)
         if (!empty($reference_images_base64)) {
             if (count($reference_images_base64) === 1) {
                 // Single image - use legacy format for backwards compatibility

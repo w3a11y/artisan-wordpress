@@ -357,47 +357,47 @@ class W3A11Y_Artisan_Admin {
             ),
             '2:3' => array(
                 'label' => __('Portrait', 'w3a11y-artisan'),
-                'dimensions' => '832×1248',
+                'dimensions' => '848×1264',
                 'icon' => '<svg width="12" height="18" viewBox="0 0 12 18" fill="none"><rect x="1" y="1" width="10" height="16" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '3:2' => array(
                 'label' => __('Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1248×832',
+                'dimensions' => '1264×848',
                 'icon' => '<svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="1" y="1" width="16" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '3:4' => array(
                 'label' => __('Classic Portrait', 'w3a11y-artisan'),
-                'dimensions' => '864×1184',
+                'dimensions' => '896×1200',
                 'icon' => '<svg width="12" height="16" viewBox="0 0 12 16" fill="none"><rect x="1" y="1" width="10" height="14" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '4:3' => array(
                 'label' => __('Classic Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1184×864',
+                'dimensions' => '1200×896',
                 'icon' => '<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '4:5' => array(
                 'label' => __('Social Portrait', 'w3a11y-artisan'),
-                'dimensions' => '896×1152',
+                'dimensions' => '928×1152',
                 'icon' => '<svg width="12" height="15" viewBox="0 0 12 15" fill="none"><rect x="1" y="1" width="10" height="13" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '5:4' => array(
                 'label' => __('Social Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1152×896',
+                'dimensions' => '1152×928',
                 'icon' => '<svg width="15" height="12" viewBox="0 0 15 12" fill="none"><rect x="1" y="1" width="13" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '9:16' => array(
                 'label' => __('Mobile Portrait', 'w3a11y-artisan'),
-                'dimensions' => '768×1344',
+                'dimensions' => '768×1376',
                 'icon' => '<svg width="12" height="22" viewBox="0 0 12 22" fill="none"><rect x="1" y="1" width="10" height="20" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '16:9' => array(
                 'label' => __('Widescreen', 'w3a11y-artisan'),
-                'dimensions' => '1344×768',
+                'dimensions' => '1376×768',
                 'icon' => '<svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="1" y="1" width="20" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '21:9' => array(
                 'label' => __('Ultra Wide', 'w3a11y-artisan'),
-                'dimensions' => '1536×672',
+                'dimensions' => '1584×672',
                 'icon' => '<svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="1" y="1" width="24" height="9" stroke="currentColor" stroke-width="2"></rect></svg>'
             )
         );

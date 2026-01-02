@@ -43,7 +43,7 @@
                 mode: 'generate', // 'generate' or 'edit'
                 currentImage: null,
                 originalImage: null,
-                referenceImages: [], // Array to store multiple reference images (max 3)
+                referenceImages: [], // Array to store multiple reference images (max 13)
                 attachmentId: null,
                 history: [], // Prompt history for reuse
                 originalUserPrompt: null, // Store original user input before AI refinement
@@ -60,8 +60,10 @@
                 maxHistorySize: 20, // Maximum number of states to keep
                 // Generation options
                 selectedAspectRatio: '1:1',
+                selectedResolution: '1K',
                 selectedStyle: 'photorealistic',
                 imageDimensions: { width: 1024, height: 1024 }, // Default square
+                useGoogleSearch: false, // Grounding with Google Search for real-time information
                 // Output format options
                 selectedFormat: 'png',
                 selectedQuality: 90
@@ -429,8 +431,35 @@
             if (styleOptions) {
                 styleOptions.addEventListener('click', (e) => {
                     if (e.target.classList.contains('w3a11y-option-btn')) {
+                        // Prevent style selection if Google Search is enabled
+                        if (this.state.useGoogleSearch) {
+                            w3a11yLog('Style options are disabled when Google Search is enabled');
+                            return;
+                        }
                         this.selectStyle(e.target);
                     }
+                });
+            }
+
+            // Resolution options
+            const resolutionOptions = document.getElementById('w3a11y-resolution-options');
+            if (resolutionOptions) {
+                resolutionOptions.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('w3a11y-option-btn')) {
+                        this.selectResolution(e.target);
+                    }
+                });
+            }
+
+            // Google Search grounding checkbox
+            const googleSearchCheckbox = document.getElementById('w3a11y-google-search-checkbox');
+            if (googleSearchCheckbox) {
+                googleSearchCheckbox.addEventListener('change', (e) => {
+                    this.state.useGoogleSearch = e.target.checked;
+                    w3a11yLog(`Google Search grounding ${this.state.useGoogleSearch ? 'enabled' : 'disabled'}`);
+
+                    // Disable/enable style options when Google Search is toggled
+                    this.toggleStyleOptions(!e.target.checked);
                 });
             }
 
@@ -999,11 +1028,13 @@
                 nonce: w3a11yArtisan.nonce
             };
 
-            // Add generation options (aspect ratio and style)
+            // Add generation options (aspect ratio, style, resolution, and Google Search)
             requestData.aspect_ratio = this.state.selectedAspectRatio;
             requestData.style = this.state.selectedStyle;
             requestData.width = this.state.imageDimensions.width;
             requestData.height = this.state.imageDimensions.height;
+            requestData.resolution = this.state.selectedResolution;
+            requestData.use_google_search = this.state.useGoogleSearch;
 
             // Add current image for editing (either explicit edit mode or auto-detected)
             if ((effectiveMode === 'edit' || hasGeneratedImage) && this.state.currentImage) {
@@ -1016,7 +1047,7 @@
                 }
             }
 
-            // Add reference images if provided (max 2)
+            // Add reference images if provided (max 13)
             if (this.state.referenceImages.length > 0) {
                 const base64Array = this.state.referenceImages.map(img => img.base64);
                 requestData.referenceImagesBase64 = JSON.stringify(base64Array); // Convert array to JSON string
@@ -1370,7 +1401,7 @@
         }
 
         /**
-         * Handle reference images upload (supports multiple files, max 3)
+         * Handle reference images upload (supports multiple files, max 13)
          */
         handleReferenceUpload(e) {
             const files = Array.from(e.target.files);
@@ -1378,9 +1409,9 @@
 
             // Check if adding these files would exceed the limit
             const totalFiles = this.state.referenceImages.length + files.length;
-            if (totalFiles > 3) {
-                const allowedCount = 3 - this.state.referenceImages.length;
-                this.showError(`You can only upload up to 3 reference images. You can add ${allowedCount} more.`);
+            if (totalFiles > 13) {
+                const allowedCount = 13 - this.state.referenceImages.length;
+                this.showError(`You can only upload up to 13 reference images. You can add ${allowedCount} more.`);
                 return;
             }
 
@@ -1511,7 +1542,7 @@
 
             // Update count
             if (this.elements.referenceCount) {
-                this.elements.referenceCount.textContent = `${this.state.referenceImages.length}/3`;
+                this.elements.referenceCount.textContent = `${this.state.referenceImages.length}/13`;
             }
 
             if (this.state.referenceImages.length === 0) {
@@ -1644,6 +1675,54 @@
                     this.selectFormat(pngButton);
                 }
             }
+        }
+
+        /**
+         * Toggle style options (enable/disable)
+         * @param {boolean} enabled - Whether style options should be enabled
+         */
+        toggleStyleOptions(enabled) {
+            const styleButtons = document.querySelectorAll('#w3a11y-style-options .w3a11y-option-btn');
+
+            if (enabled) {
+                // Enable style options
+                styleButtons.forEach(btn => {
+                    btn.classList.remove('disabled');
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                    btn.style.pointerEvents = 'auto';
+                });
+            } else {
+                // Disable style options and clear selection
+                styleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('disabled');
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.style.pointerEvents = 'none';
+                });
+
+                // Clear selected style
+                this.state.selectedStyle = null;
+                w3a11yLog('Style options disabled - Google Search requires original prompt');
+            }
+        }
+
+        /**
+         * Select resolution (1K, 2K, 4K)
+         */
+        selectResolution(button) {
+            // Remove active class from all resolution buttons
+            const resolutionButtons = document.querySelectorAll('#w3a11y-resolution-options .w3a11y-option-btn');
+            resolutionButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Add active class to selected button
+            button.classList.add('active');
+
+            // Get selected resolution
+            this.state.selectedResolution = button.getAttribute('data-resolution');
+
+            w3a11yLog(`Selected resolution: ${this.state.selectedResolution}`);
         }
 
         /**

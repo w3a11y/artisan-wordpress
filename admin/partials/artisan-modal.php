@@ -154,71 +154,109 @@ $w3a11y_default_style = isset($w3a11y_settings['default_style']) ? $w3a11y_setti
                         <div class="w3a11y-reference-preview-container" id="w3a11y-reference-preview-container" style="display: none;">
                             <div class="w3a11y-reference-preview-header">
                                 <span class="w3a11y-reference-label"><?php esc_html_e('Reference Images:', 'w3a11y-artisan'); ?></span>
-                                <span class="w3a11y-reference-count" id="w3a11y-reference-count">0/3</span>
+                                <span class="w3a11y-reference-count" id="w3a11y-reference-count">0/13</span>
                             </div>
                             <div class="w3a11y-reference-images" id="w3a11y-reference-images">
                                 <!-- Reference image previews will be added here dynamically -->
                             </div>
+                            <p class="w3a11y-help-text"><?php esc_html_e('Up to 13 total images: 6 for objects (high-fidelity), 5 for humans (character consistency).', 'w3a11y-artisan'); ?></p>
                         </div>
                         
                         <!-- Generation Options -->
                         <div class="w3a11y-generation-options">
+
+                            <!-- Google Search Grounding -->
+                            <div class="w3a11y-option-group">
+                                <h3 class="w3a11y-section-title"><?php esc_html_e('Real-Time Information', 'w3a11y-artisan'); ?></h3>
+                                <label class="w3a11y-checkbox-wrapper">
+                                    <input type="checkbox" id="w3a11y-google-search-checkbox" />
+                                    <span class="w3a11y-checkbox-custom"></span>
+                                    <span class="w3a11y-checkbox-label">
+                                        <span class="w3a11y-checkbox-icon">🌐</span>
+                                        <?php esc_html_e('Enable Google Search', 'w3a11y-artisan'); ?>
+                                    </span>
+                                </label>
+                                <p class="w3a11y-help-text"><?php esc_html_e('Use real-time data like weather, sports scores, stock charts, recent events etc. Best for prompts requiring current information.', 'w3a11y-artisan'); ?></p>
+                            </div>
                             
                             <!-- Aspect Ratio Selection -->
                             <div class="w3a11y-option-group">
                                 <h3 class="w3a11y-section-title"><?php esc_html_e('Aspect Ratio', 'w3a11y-artisan'); ?></h3>
                                 <div class="w3a11y-option-buttons w3a11y-aspect-ratio-grid" id="w3a11y-aspect-ratio-options">
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '1:1') ? ' active' : ''; ?>" data-aspect="1:1" data-width="1024" data-height="1024">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '1:1') ? ' active' : ''; ?>" data-aspect="1:1" data-width-1k="1024" data-height-1k="1024" data-width-2k="2048" data-height-2k="2048" data-width-4k="4096" data-height-4k="4096">
                                         <span class="w3a11y-aspect-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="1" width="20" height="20" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">1:1</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Square', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '2:3') ? ' active' : ''; ?>" data-aspect="2:3" data-width="832" data-height="1248">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '2:3') ? ' active' : ''; ?>" data-aspect="2:3" data-width-1k="848" data-height-1k="1264" data-width-2k="1696" data-height-2k="2528" data-width-4k="3392" data-height-4k="5056">
                                         <span class="w3a11y-aspect-icon"><svg width="12" height="18" viewBox="0 0 12 18" fill="none"><rect x="1" y="1" width="10" height="16" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">2:3</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Portrait', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '3:2') ? ' active' : ''; ?>" data-aspect="3:2" data-width="1248" data-height="832">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '3:2') ? ' active' : ''; ?>" data-aspect="3:2" data-width-1k="1264" data-height-1k="848" data-width-2k="2528" data-height-2k="1696" data-width-4k="5056" data-height-4k="3392">
                                         <span class="w3a11y-aspect-icon"><svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="1" y="1" width="16" height="10" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">3:2</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Landscape', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '3:4') ? ' active' : ''; ?>" data-aspect="3:4" data-width="864" data-height="1184">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '3:4') ? ' active' : ''; ?>" data-aspect="3:4" data-width-1k="896" data-height-1k="1200" data-width-2k="1792" data-height-2k="2400" data-width-4k="3584" data-height-4k="4800">
                                         <span class="w3a11y-aspect-icon"><svg width="12" height="16" viewBox="0 0 12 16" fill="none"><rect x="1" y="1" width="10" height="14" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">3:4</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Classic Portrait', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '4:3') ? ' active' : ''; ?>" data-aspect="4:3" data-width="1184" data-height="864">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '4:3') ? ' active' : ''; ?>" data-aspect="4:3" data-width-1k="1200" data-height-1k="896" data-width-2k="2400" data-height-2k="1792" data-width-4k="4800" data-height-4k="3584">
                                         <span class="w3a11y-aspect-icon"><svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">4:3</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Classic Landscape', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '4:5') ? ' active' : ''; ?>" data-aspect="4:5" data-width="896" data-height="1152">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '4:5') ? ' active' : ''; ?>" data-aspect="4:5" data-width-1k="928" data-height-1k="1152" data-width-2k="1856" data-height-2k="2304" data-width-4k="3712" data-height-4k="4608">
                                         <span class="w3a11y-aspect-icon"><svg width="12" height="15" viewBox="0 0 12 15" fill="none"><rect x="1" y="1" width="10" height="13" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">4:5</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Social Portrait', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '5:4') ? ' active' : ''; ?>" data-aspect="5:4" data-width="1152" data-height="896">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '5:4') ? ' active' : ''; ?>" data-aspect="5:4" data-width-1k="1152" data-height-1k="928" data-width-2k="2304" data-height-2k="1856" data-width-4k="4608" data-height-4k="3712">
                                         <span class="w3a11y-aspect-icon"><svg width="15" height="12" viewBox="0 0 15 12" fill="none"><rect x="1" y="1" width="13" height="10" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">5:4</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Social Landscape', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '9:16') ? ' active' : ''; ?>" data-aspect="9:16" data-width="768" data-height="1344">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '9:16') ? ' active' : ''; ?>" data-aspect="9:16" data-width-1k="768" data-height-1k="1376" data-width-2k="1536" data-height-2k="2752" data-width-4k="3072" data-height-4k="5504">
                                         <span class="w3a11y-aspect-icon"><svg width="12" height="22" viewBox="0 0 12 22" fill="none"><rect x="1" y="1" width="10" height="20" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">9:16</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Mobile Portrait', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '16:9') ? ' active' : ''; ?>" data-aspect="16:9" data-width="1344" data-height="768">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '16:9') ? ' active' : ''; ?>" data-aspect="16:9" data-width-1k="1376" data-height-1k="768" data-width-2k="2752" data-height-2k="1536" data-width-4k="5504" data-height-4k="3072">
                                         <span class="w3a11y-aspect-icon"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="1" y="1" width="20" height="10" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">16:9</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Widescreen', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '21:9') ? ' active' : ''; ?>" data-aspect="21:9" data-width="1536" data-height="672">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_aspect_ratio === '21:9') ? ' active' : ''; ?>" data-aspect="21:9" data-width-1k="1584" data-height-1k="672" data-width-2k="3168" data-height-2k="1344" data-width-4k="6336" data-height-4k="2688">
                                         <span class="w3a11y-aspect-icon"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="1" y="1" width="24" height="9" stroke="#8E9099" stroke-width="2"></rect></svg></span>
                                         <span class="w3a11y-aspect-label">21:9</span>
                                         <span class="w3a11y-aspect-desc"><?php esc_html_e('Ultra Wide', 'w3a11y-artisan'); ?></span>
                                     </button>
                                 </div>
+                            </div>
+                            
+                            <!-- Resolution Selection -->
+                            <div class="w3a11y-option-group">
+                                <h3 class="w3a11y-section-title"><?php esc_html_e('Resolution', 'w3a11y-artisan'); ?></h3>
+                                <div class="w3a11y-option-buttons" id="w3a11y-resolution-options">
+                                    <button type="button" class="w3a11y-option-btn active" data-resolution="1K">
+                                        <span class="w3a11y-resolution-icon">📱</span>
+                                        <span class="w3a11y-resolution-label">1K</span>
+                                        <span class="w3a11y-resolution-desc"><?php esc_html_e('Standard', 'w3a11y-artisan'); ?></span>
+                                    </button>
+                                    <button type="button" class="w3a11y-option-btn" data-resolution="2K">
+                                        <span class="w3a11y-resolution-icon">💻</span>
+                                        <span class="w3a11y-resolution-label">2K</span>
+                                        <span class="w3a11y-resolution-desc"><?php esc_html_e('High', 'w3a11y-artisan'); ?></span>
+                                    </button>
+                                    <button type="button" class="w3a11y-option-btn" data-resolution="4K">
+                                        <span class="w3a11y-resolution-icon">🖥️</span>
+                                        <span class="w3a11y-resolution-label">4K</span>
+                                        <span class="w3a11y-resolution-desc"><?php esc_html_e('Ultra', 'w3a11y-artisan'); ?></span>
+                                    </button>
+                                </div>
+                                <p class="w3a11y-help-text"><?php esc_html_e('Higher resolution images take longer to generate and use more credits.', 'w3a11y-artisan'); ?></p>
                             </div>
                             
                             <!-- Style Selection -->
