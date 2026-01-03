@@ -200,7 +200,7 @@ class W3A11Y_Artisan_API_Handler {
         
         // Get resolution and Google Search grounding options
         $resolution = isset($_POST['resolution']) ? sanitize_text_field(wp_unslash($_POST['resolution'])) : '1K';
-        $use_google_search = isset($_POST['use_google_search']) && $_POST['use_google_search'] === 'true';
+        $use_google_search = isset($_POST['use_google_search']) && sanitize_text_field(wp_unslash($_POST['use_google_search'])) === 'true';
         
         // Validate prompt
         if (empty($prompt) || strlen($prompt) < 10) {
@@ -379,11 +379,14 @@ class W3A11Y_Artisan_API_Handler {
                     }
                 }
             }
-        } elseif (isset($_POST['reference_image_base64']) && !empty($_POST['reference_image_base64'])) {
+        } elseif (isset($_POST['reference_image_base64'])) {
             // Legacy format: single base64 image
-            $sanitized = self::sanitize_base64_image(sanitize_textarea_field(wp_unslash($_POST['reference_image_base64'])));
-            if ($sanitized !== false && !empty($sanitized)) {
-                $reference_images_base64 = array($sanitized);
+            $ref_image_raw = sanitize_textarea_field(wp_unslash($_POST['reference_image_base64']));
+            if (!empty($ref_image_raw)) {
+                $sanitized = self::sanitize_base64_image($ref_image_raw);
+                if ($sanitized !== false && !empty($sanitized)) {
+                    $reference_images_base64 = array($sanitized);
+                }
             }
         }
         $edit_type = isset($_POST['edit_type']) ? sanitize_text_field(wp_unslash($_POST['edit_type'])) : 'modify';
@@ -397,7 +400,7 @@ class W3A11Y_Artisan_API_Handler {
         
         // Get resolution and Google Search grounding options
         $resolution = isset($_POST['resolution']) ? sanitize_text_field(wp_unslash($_POST['resolution'])) : '1K';
-        $use_google_search = isset($_POST['use_google_search']) && $_POST['use_google_search'] === 'true';
+        $use_google_search = isset($_POST['use_google_search']) && sanitize_text_field(wp_unslash($_POST['use_google_search'])) === 'true';
         
         // Validate prompt
         if (empty($prompt) || strlen($prompt) < 5) {
