@@ -213,6 +213,15 @@ class W3A11Y_Artisan_Admin {
             'w3a11y_artisan_image_section'
         );
         
+        // Default Resolution field
+        add_settings_field(
+            'default_resolution',
+            __('Default Resolution', 'w3a11y-artisan'),
+            array($this, 'default_resolution_field_callback'),
+            'w3a11y-artisan-settings',
+            'w3a11y_artisan_image_section'
+        );
+        
         // Default Style field
         add_settings_field(
             'default_style',
@@ -348,56 +357,57 @@ class W3A11Y_Artisan_Admin {
     public function default_aspect_ratio_field_callback() {
         $settings = W3A11Y_Artisan::get_settings();
         $default_aspect_ratio = isset($settings['default_aspect_ratio']) ? $settings['default_aspect_ratio'] : '1:1';
+        $default_resolution = isset($settings['default_resolution']) ? $settings['default_resolution'] : '1K';
         
         $aspect_ratios = array(
             '1:1' => array(
                 'label' => __('Square', 'w3a11y-artisan'),
-                'dimensions' => '1024×1024',
+                'dimensions' => array('1K' => '1024×1024', '2K' => '2048×2048', '4K' => '4096×4096'),
                 'icon' => '<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="1" width="20" height="20" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '2:3' => array(
                 'label' => __('Portrait', 'w3a11y-artisan'),
-                'dimensions' => '848×1264',
+                'dimensions' => array('1K' => '848×1264', '2K' => '1696×2528', '4K' => '3392×5056'),
                 'icon' => '<svg width="12" height="18" viewBox="0 0 12 18" fill="none"><rect x="1" y="1" width="10" height="16" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '3:2' => array(
                 'label' => __('Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1264×848',
+                'dimensions' => array('1K' => '1264×848', '2K' => '2528×1696', '4K' => '5056×3392'),
                 'icon' => '<svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="1" y="1" width="16" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '3:4' => array(
                 'label' => __('Classic Portrait', 'w3a11y-artisan'),
-                'dimensions' => '896×1200',
+                'dimensions' => array('1K' => '896×1200', '2K' => '1792×2400', '4K' => '3584×4800'),
                 'icon' => '<svg width="12" height="16" viewBox="0 0 12 16" fill="none"><rect x="1" y="1" width="10" height="14" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '4:3' => array(
                 'label' => __('Classic Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1200×896',
+                'dimensions' => array('1K' => '1200×896', '2K' => '2400×1792', '4K' => '4800×3584'),
                 'icon' => '<svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect x="1" y="1" width="16" height="12" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '4:5' => array(
                 'label' => __('Social Portrait', 'w3a11y-artisan'),
-                'dimensions' => '928×1152',
+                'dimensions' => array('1K' => '928×1152', '2K' => '1856×2304', '4K' => '3712×4608'),
                 'icon' => '<svg width="12" height="15" viewBox="0 0 12 15" fill="none"><rect x="1" y="1" width="10" height="13" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '5:4' => array(
                 'label' => __('Social Landscape', 'w3a11y-artisan'),
-                'dimensions' => '1152×928',
+                'dimensions' => array('1K' => '1152×928', '2K' => '2304×1856', '4K' => '4608×3712'),
                 'icon' => '<svg width="15" height="12" viewBox="0 0 15 12" fill="none"><rect x="1" y="1" width="13" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '9:16' => array(
                 'label' => __('Mobile Portrait', 'w3a11y-artisan'),
-                'dimensions' => '768×1376',
+                'dimensions' => array('1K' => '768×1376', '2K' => '1536×2752', '4K' => '3072×5504'),
                 'icon' => '<svg width="12" height="22" viewBox="0 0 12 22" fill="none"><rect x="1" y="1" width="10" height="20" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '16:9' => array(
                 'label' => __('Widescreen', 'w3a11y-artisan'),
-                'dimensions' => '1376×768',
+                'dimensions' => array('1K' => '1376×768', '2K' => '2752×1536', '4K' => '5504×3072'),
                 'icon' => '<svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="1" y="1" width="20" height="10" stroke="currentColor" stroke-width="2"></rect></svg>'
             ),
             '21:9' => array(
                 'label' => __('Ultra Wide', 'w3a11y-artisan'),
-                'dimensions' => '1584×672',
+                'dimensions' => array('1K' => '1584×672', '2K' => '3168×1344', '4K' => '6336×2688'),
                 'icon' => '<svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="1" y="1" width="24" height="9" stroke="currentColor" stroke-width="2"></rect></svg>'
             )
         );
@@ -432,13 +442,59 @@ class W3A11Y_Artisan_Admin {
             echo '<span class="w3a11y-aspect-info">';
             echo '<strong>' . esc_html($ratio) . '</strong><br>';
             echo '<small>' . esc_html($info['label']) . '</small><br>';
-            echo '<small class="dimensions">' . esc_html($info['dimensions']) . '</small>';
+            echo '<small class="dimensions" data-1k="' . esc_attr($info['dimensions']['1K']) . '" data-2k="' . esc_attr($info['dimensions']['2K']) . '" data-4k="' . esc_attr($info['dimensions']['4K']) . '">' . esc_html($info['dimensions'][$default_resolution]) . '</small>';
             echo '</span>';
             echo '</span>';
             echo '</label>';
         }
         echo '</div>';
-        echo '<p class="description">' . esc_html(__('Select the default aspect ratio that will be pre-selected when users open the Artisan editor.', 'w3a11y-artisan')) . '</p>';
+        echo '<p class="description">' . esc_html(__('Select the default aspect ratio that will be pre-selected when users open the Artisan editor. Dimensions update based on selected resolution.', 'w3a11y-artisan')) . '</p>';
+        
+    }
+
+    /**
+     * Default Resolution field callback
+     * 
+     * @since 1.0.0
+     */
+    public function default_resolution_field_callback() {
+        $settings = W3A11Y_Artisan::get_settings();
+        $default_resolution = isset($settings['default_resolution']) ? $settings['default_resolution'] : '1K';
+        
+        $resolutions = array(
+            '1K' => array(
+                'label' => __('1K (Standard)', 'w3a11y-artisan'),
+                'description' => __('1024px base resolution - Fast generation', 'w3a11y-artisan'),
+                'icon' => '📱'
+            ),
+            '2K' => array(
+                'label' => __('2K (High Quality)', 'w3a11y-artisan'),
+                'description' => __('2048px base resolution - Balanced quality and speed', 'w3a11y-artisan'),
+                'icon' => '💻'
+            ),
+            '4K' => array(
+                'label' => __('4K (Ultra High)', 'w3a11y-artisan'),
+                'description' => __('4096px base resolution - Best quality, slower generation', 'w3a11y-artisan'),
+                'icon' => '🖥️'
+            )
+        );
+        
+        echo '<div class="w3a11y-resolution-options">';
+        foreach ($resolutions as $resolution => $info) {
+            $checked = ($default_resolution === $resolution) ? 'checked' : '';
+            echo '<label class="w3a11y-resolution-option">';
+            echo '<input type="radio" name="w3a11y_artisan_settings[default_resolution]" value="' . esc_attr($resolution) . '" ' . esc_attr($checked) . ' />';
+            echo '<span class="w3a11y-resolution-visual">';
+            echo '<span class="w3a11y-resolution-icon">' . esc_html($info['icon']) . '</span>';
+            echo '<span class="w3a11y-resolution-info">';
+            echo '<strong>' . esc_html($info['label']) . '</strong><br>';
+            echo '<small>' . esc_html($info['description']) . '</small>';
+            echo '</span>';
+            echo '</span>';
+            echo '</label>';
+        }
+        echo '</div>';
+        echo '<p class="description">' . esc_html(__('Higher resolution images take longer to generate and use more credits.', 'w3a11y-artisan')) . '</p>';
         
     }
 
@@ -546,7 +602,7 @@ class W3A11Y_Artisan_Admin {
             
             // Add JavaScript for log management using wp_add_inline_script
             $nonce = wp_create_nonce('w3a11y_logs');
-            $download_url = admin_url('admin-ajax.php?action=w3a11y_download_logs&nonce=' . $nonce);
+            $ajax_url = admin_url('admin-ajax.php');
             
             $inline_script = "
             window.w3a11yViewLogs = function() {
@@ -578,7 +634,8 @@ class W3A11Y_Artisan_Admin {
             };
             
             window.w3a11yDownloadLogs = function() {
-                window.open('" . esc_url($download_url) . "');
+                const downloadUrl = '" . esc_js($ajax_url) . "' + '?action=w3a11y_download_logs&nonce=" . esc_js($nonce) . "';
+                window.open(downloadUrl);
             };
             
             window.w3a11yClearLogs = function() {
@@ -886,6 +943,13 @@ class W3A11Y_Artisan_Admin {
             $allowed_ratios = array('1:1', '2:3', '3:2', '3:4', '4:3', '4:5', '5:4', '9:16', '16:9', '21:9');
             $ratio = sanitize_text_field($input['default_aspect_ratio']);
             $sanitized['default_aspect_ratio'] = in_array($ratio, $allowed_ratios) ? $ratio : '1:1';
+        }
+        
+        // Sanitize default resolution
+        if (isset($input['default_resolution'])) {
+            $allowed_resolutions = array('1K', '2K', '4K');
+            $resolution = sanitize_text_field($input['default_resolution']);
+            $sanitized['default_resolution'] = in_array($resolution, $allowed_resolutions) ? $resolution : '1K';
         }
         
         // Sanitize default style

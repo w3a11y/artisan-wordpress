@@ -327,6 +327,36 @@ class W3A11Y_Artisan {
                 W3A11Y_ARTISAN_VERSION
             );
         }
+        
+        // Add inline script for settings page to handle dynamic dimension updates
+        if (strpos($hook_suffix, 'w3a11y-artisan-settings') !== false) {
+            $inline_script = "
+            document.addEventListener('DOMContentLoaded', function() {
+                const resolutionOptions = document.querySelectorAll('input[name=\"w3a11y_artisan_settings[default_resolution]\"]');
+                const dimensionElements = document.querySelectorAll('.w3a11y-aspect-ratio-options .dimensions');
+                
+                function updateDimensions() {
+                    const selectedResolution = document.querySelector('input[name=\"w3a11y_artisan_settings[default_resolution]\"]:checked');
+                    if (!selectedResolution) return;
+                    
+                    const resolution = selectedResolution.value.toLowerCase();
+                    
+                    dimensionElements.forEach(function(element) {
+                        const dimensionValue = element.getAttribute('data-' + resolution);
+                        if (dimensionValue) {
+                            element.textContent = dimensionValue;
+                        }
+                    });
+                }
+                
+                resolutionOptions.forEach(function(option) {
+                    option.addEventListener('change', updateDimensions);
+                });
+            });
+            ";
+            
+            wp_add_inline_script('w3a11y-artisan-inline', $inline_script);
+        }
     }
     
     /**

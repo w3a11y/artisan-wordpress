@@ -4,7 +4,7 @@ Tags: ai, image-generation, accessibility, alt-text, media-library
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,14 +20,16 @@ W3A11Y Artisan brings cutting-edge AI image generation and editing capabilities 
 
 **🎨 AI Image Generation**
 * Generate high-quality images from text descriptions along with your voice input
-* Variety of aspect ratios: square (1:1), portrait (2:3), landscape (3:2), classic portrait (3:4), classic landscape (4:3), social portrait (4:5), social landscape (5:4), mobile portrait (9:16), widescreen (16:9) and ultra-wide (21:9)
+* **Multiple resolution options**: 1K (1024px), 2K (2048px), and 4K (4096px) for optimal quality
+* **Variety of aspect ratios**: square (1:1), portrait (2:3), landscape (3:2), classic portrait (3:4), classic landscape (4:3), social portrait (4:5), social landscape (5:4), mobile portrait (9:16), widescreen (16:9) and ultra-wide (21:9) - each with resolution-specific dimensions
+* **Real-time Google Search grounding**: Generate images with accurate, current information pulled from live web searches
 * Variety of styles: photorealistic, illustrations, artistic, minimalist, product and logo
 * Professional results in seconds
 * Direct integration with WordPress Media Library
 
 **🖼️ Intelligent Image Editing**
 * Edit existing images using simple text prompts
-* Reference image uploads for guided generation
+* **Upload up to 13 reference images** for guided generation and style matching
 * Advanced AI-powered modifications
 * Non-destructive editing workflow
 * Maintain original image quality
@@ -170,7 +172,7 @@ We offer comprehensive support through multiple channels:
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0 =
 * Initial release
 * AI image generation from text descriptions
 * AI-powered image editing capabilities
@@ -183,7 +185,7 @@ We offer comprehensive support through multiple channels:
 
 == Upgrade Notice ==
 
-= 1.0.0 =
+= 1.0 =
 This is the initial release of W3A11Y Artisan. Install now to start generating professional AI images directly in your WordPress Media Library.
 
 == Additional Info ==

@@ -20,14 +20,16 @@ W3A11Y Artisan brings cutting-edge AI image generation and editing capabilities 
 
 **🎨 AI Image Generation**
 * Generate high-quality images from text descriptions along with your voice input
-* Variety of aspect ratios: square (1:1), portrait (2:3), landscape (3:2), classic portrait (3:4), classic landscape (4:3), social portrait (4:5), social landscape (5:4), mobile portrait (9:16), widescreen (16:9) and ultra-wide (21:9)
+* **Multiple resolution options**: 1K (1024px), 2K (2048px), and 4K (4096px) for optimal quality
+* **Variety of aspect ratios**: square (1:1), portrait (2:3), landscape (3:2), classic portrait (3:4), classic landscape (4:3), social portrait (4:5), social landscape (5:4), mobile portrait (9:16), widescreen (16:9) and ultra-wide (21:9) - each with resolution-specific dimensions
+* **Real-time Google Search grounding**: Generate images with accurate, current information pulled from live web searches
 * Variety of styles: photorealistic, illustrations, artistic, minimalist, product and logo
 * Professional results in seconds
 * Direct integration with WordPress Media Library
 
 **🖼️ Intelligent Image Editing**
 * Edit existing images using simple text prompts
-* Reference image uploads for guided generation
+* **Upload up to 13 reference images** for guided generation and style matching
 * Advanced AI-powered modifications
 * Non-destructive editing workflow
 * Maintain original image quality

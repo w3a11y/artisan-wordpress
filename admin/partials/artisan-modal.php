@@ -17,6 +17,7 @@ if (!defined('ABSPATH')) {
 // Get admin default settings
 $w3a11y_settings = get_option('w3a11y_artisan_settings', array());
 $w3a11y_default_aspect_ratio = isset($w3a11y_settings['default_aspect_ratio']) ? $w3a11y_settings['default_aspect_ratio'] : '1:1';
+$w3a11y_default_resolution = isset($w3a11y_settings['default_resolution']) ? $w3a11y_settings['default_resolution'] : '1K';
 $w3a11y_default_style = isset($w3a11y_settings['default_style']) ? $w3a11y_settings['default_style'] : 'photorealistic';
 ?>
 
@@ -240,17 +241,17 @@ $w3a11y_default_style = isset($w3a11y_settings['default_style']) ? $w3a11y_setti
                             <div class="w3a11y-option-group">
                                 <h3 class="w3a11y-section-title"><?php esc_html_e('Resolution', 'w3a11y-artisan'); ?></h3>
                                 <div class="w3a11y-option-buttons" id="w3a11y-resolution-options">
-                                    <button type="button" class="w3a11y-option-btn active" data-resolution="1K">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_resolution === '1K') ? ' active' : ''; ?>" data-resolution="1K">
                                         <span class="w3a11y-resolution-icon">📱</span>
                                         <span class="w3a11y-resolution-label">1K</span>
                                         <span class="w3a11y-resolution-desc"><?php esc_html_e('Standard', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn" data-resolution="2K">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_resolution === '2K') ? ' active' : ''; ?>" data-resolution="2K">
                                         <span class="w3a11y-resolution-icon">💻</span>
                                         <span class="w3a11y-resolution-label">2K</span>
                                         <span class="w3a11y-resolution-desc"><?php esc_html_e('High', 'w3a11y-artisan'); ?></span>
                                     </button>
-                                    <button type="button" class="w3a11y-option-btn" data-resolution="4K">
+                                    <button type="button" class="w3a11y-option-btn<?php echo ($w3a11y_default_resolution === '4K') ? ' active' : ''; ?>" data-resolution="4K">
                                         <span class="w3a11y-resolution-icon">🖥️</span>
                                         <span class="w3a11y-resolution-label">4K</span>
                                         <span class="w3a11y-resolution-desc"><?php esc_html_e('Ultra', 'w3a11y-artisan'); ?></span>
