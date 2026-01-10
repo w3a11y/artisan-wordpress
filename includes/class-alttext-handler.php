@@ -78,6 +78,9 @@ class W3A11Y_AltText_Handler {
         add_action('wp_ajax_w3a11y_get_credits_info', array($this, 'handle_get_credits_info'));
         add_action('wp_ajax_w3a11y_get_session_status', array($this, 'handle_get_session_status'));
         add_action('wp_ajax_w3a11y_resume_bulk_processing', array($this, 'handle_resume_bulk_processing'));
+        
+        // Auto-generate alt text on image upload
+        add_action('add_attachment', array($this, 'auto_generate_alttext_on_upload'));
     }
 
     /**
@@ -734,4 +737,123 @@ class W3A11Y_AltText_Handler {
         $settings = get_option('w3a11y_artisan_settings', array());
         return $settings['api_key'] ?? '';
     }
+
+    /**
+     * Auto-generate alt text when new images are uploaded
+     * 
+     * @param int $attachment_id Attachment ID of uploaded image.
+     * @since 1.1.0
+     */
+    public function auto_generate_alttext_on_upload($attachment_id) {
+        // Check if auto-generation is enabled
+        $settings = get_option('w3a11y_artisan_settings', array());
+        if (empty($settings['auto_generate_alttext'])) {
+            return;
+        }
+        
+        // Check if API key is configured
+        $api_key = $this->get_api_key();
+        if (empty($api_key)) {
+            return;
+        }
+        
+        // Check if the attachment is an image
+        if (!wp_attachment_is_image($attachment_id)) {
+            return;
+        }
+        
+        // Check if alt text already exists
+        $existing_alt = get_post_meta($attachment_id, '_wp_attachment_image_alt', true);
+        if (!empty($existing_alt)) {
+            // Skip if alt text already exists
+            return;
+        }
+        
+        // Schedule alt text generation to run after upload is complete
+        // Using wp_schedule_single_event to avoid blocking the upload process
+        wp_schedule_single_event(time() + 5, 'w3a11y_scheduled_alttext_generation', array($attachment_id));
+        
+        // Also try to generate immediately if scheduling fails
+        if (!wp_next_scheduled('w3a11y_scheduled_alttext_generation', array($attachment_id))) {
+            $this->generate_alttext_for_attachment($attachment_id);
+        }
+    }
+
+    /**
+     * Generate alt text for a specific attachment
+     * 
+     * @param int $attachment_id Attachment ID.
+     * @return bool Success status.
+     * @since 1.1.0
+     */
+    private function generate_alttext_for_attachment($attachment_id) {
+        try {
+            // Get image URL
+            $image_url = wp_get_attachment_url($attachment_id);
+            if (!$image_url) {
+                return false;
+            }
+            
+            // Get settings
+            $alttext_settings = $this->get_alttext_settings();
+            $api_key = $this->get_api_key();
+            
+            // Prepare API request
+            $config = w3a11y_get_api_config();
+            $endpoint = w3a11y_artisan_get_api_url('alttext', 'generate');
+            
+            $body = array(
+                'imageUrl' => $image_url,
+                'customInstructions' => $alttext_settings['alttext_custom_instructions'],
+                'language' => $alttext_settings['alttext_language'],
+                'maxLength' => $alttext_settings['alttext_max_length'],
+                'style' => $alttext_settings['alttext_style']
+            );
+            
+            $args = array(
+                'method' => 'POST',
+                'timeout' => 60,
+                'headers' => array(
+                    'Authorization' => 'Bearer ' . $api_key,
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config['user_agent']
+                ),
+                'body' => wp_json_encode($body)
+            );
+            
+            $response = wp_remote_request($endpoint, $args);
+            
+            if (is_wp_error($response)) {
+                W3A11Y_Artisan::log('Auto alt text generation error: ' . $response->get_error_message(), 'error');
+                return false;
+            }
+            
+            $response_code = wp_remote_retrieve_response_code($response);
+            $response_body = wp_remote_retrieve_body($response);
+            $data = json_decode($response_body, true);
+            
+            if ($response_code === 200 && isset($data['altText'])) {
+                // Update alt text
+                update_post_meta($attachment_id, '_wp_attachment_image_alt', sanitize_text_field($data['altText']));
+                W3A11Y_Artisan::log('Auto-generated alt text for attachment ' . $attachment_id, 'info');
+                return true;
+            } else {
+                W3A11Y_Artisan::log('Auto alt text generation failed for attachment ' . $attachment_id . ': ' . $response_body, 'error');
+                return false;
+            }
+            
+        } catch (Exception $e) {
+            W3A11Y_Artisan::log('Auto alt text generation exception: ' . $e->getMessage(), 'error');
+            return false;
+        }
+    }
 }
+
+// Hook for scheduled alt text generation
+add_action('w3a11y_scheduled_alttext_generation', function($attachment_id) {
+    $handler = W3A11Y_AltText_Handler::get_instance();
+    // Use reflection to call private method
+    $method = new ReflectionMethod($handler, 'generate_alttext_for_attachment');
+    $method->setAccessible(true);
+    $method->invoke($handler, $attachment_id);
+});

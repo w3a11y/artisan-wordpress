@@ -266,6 +266,15 @@ class W3A11Y_Artisan_Admin {
             'w3a11y-artisan-settings',
             'w3a11y_artisan_alttext_section'
         );
+        
+        // Auto-generate AltText on Upload field
+        add_settings_field(
+            'auto_generate_alttext',
+            __('Auto-Generate on Upload', 'w3a11y-artisan'),
+            array($this, 'auto_generate_alttext_field_callback'),
+            'w3a11y-artisan-settings',
+            'w3a11y_artisan_alttext_section'
+        );
     }
     
     /**
@@ -868,6 +877,22 @@ class W3A11Y_Artisan_Admin {
     }
 
     /**
+     * Auto-generate AltText on Upload field callback
+     * 
+     * @since 1.1.0
+     */
+    public function auto_generate_alttext_field_callback() {
+        $settings = W3A11Y_Artisan::get_settings();
+        $auto_generate = isset($settings['auto_generate_alttext']) ? $settings['auto_generate_alttext'] : false;
+        
+        echo '<label for="auto_generate_alttext">';
+        echo '<input type="checkbox" id="auto_generate_alttext" name="w3a11y_artisan_settings[auto_generate_alttext]" value="1"' . checked($auto_generate, true, false) . ' />';
+        echo ' ' . esc_html(__('Automatically generate alt text with W3A11Y Artisan', 'w3a11y-artisan'));
+        echo '</label>';
+        echo '<p class="description">' . esc_html(__('Note: You can always generate alt text using the Bulk Alt Text page or Generate Alt Text button on an individual image.', 'w3a11y-artisan')) . '</p>';
+    }
+
+    /**
      * Sanitize settings
      * 
      * @param array $input Input settings to sanitize.
@@ -995,6 +1020,9 @@ class W3A11Y_Artisan_Admin {
             $style = sanitize_text_field($input['alttext_style']);
             $sanitized['alttext_style'] = in_array($style, $allowed_styles) ? $style : 'detailed';
         }
+        
+        // Sanitize auto-generate alttext checkbox
+        $sanitized['auto_generate_alttext'] = isset($input['auto_generate_alttext']) ? true : false;
         
         return $sanitized;
     }

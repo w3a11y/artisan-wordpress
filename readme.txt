@@ -8,15 +8,26 @@ Stable tag: 1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Generate and edit images and alttext with AI directly in your WordPress Media Library. Professional AI-powered image creation and editing made simple.
+Generate and edit images with AI and automatically create perfect alt text directly in your WordPress Media Library. Professional AI-powered image creation, editing, and accessibility made simple.
 
 == Description ==
 
-**Transform Your WordPress Media Management with AI-Powered Image Generation**
+**Transform Your WordPress Media Management with AI-Powered Image Generation and Alt Text**
 
-W3A11Y Artisan brings cutting-edge AI image generation and editing capabilities directly into your WordPress Media Library. Create stunning, professional images from simple text descriptions or edit existing images with natural language prompts.
+W3A11Y Artisan brings cutting-edge AI image generation, editing, and intelligent alt text generation capabilities directly into your WordPress Media Library. Create stunning, professional images from simple text descriptions, edit existing images with natural language prompts, and automatically generate accessible, SEO-optimized alt text for all your images.
 
 ### ✨ Key Features
+
+**♿ AI-Powered Alt Text Generation**
+* **Automatic alt text on upload**: Enable one-click setting to generate alt text for all new images automatically
+* **One-click generation**: Generate descriptive alt text for any image in your Media Library instantly
+* **Bulk processing**: Generate alt text for multiple images at once with our dedicated Bulk Alt Text page
+* **Contextual and accurate**: AI analyzes images to create meaningful, accessible descriptions
+* **Customizable output**: Choose from detailed, concise, or functional alt text styles
+* **Multi-language support**: Generate alt text in 100+ languages
+* **SEO-optimized**: Improve search engine rankings with quality image descriptions
+* **Accessibility compliance**: Meet WCAG 2.1 AA standards automatically
+* **Custom instructions**: Add specific guidelines for your brand or content needs
 
 **🎨 AI Image Generation**
 * Generate high-quality images from text descriptions along with your voice input
@@ -56,6 +67,7 @@ W3A11Y Artisan brings cutting-edge AI image generation and editing capabilities 
 
 ### 🚀 How It Works
 
+**For Image Generation:**
 1. **Setup**: Add your W3A11Y API key in plugin settings
 2. **Generate**: Click "Generate Image With W3A11Y Artisan" in Media Library or editor
 3. **Describe**: Text description of what you want via text or voice input
@@ -63,27 +75,40 @@ W3A11Y Artisan brings cutting-edge AI image generation and editing capabilities 
 5. **Edit**: Use prompts to modify your generated images or existing ones
 6. **Save**: Images save directly to your Media Library with optimization and conversion options
 
+**For Alt Text Generation:**
+1. **Setup**: Add your W3A11Y API key and optionally enable auto-generation in plugin settings
+2. **Single Image**: Click "Generate Alt Text" button on any image in Media Library
+3. **Bulk Generation**: Use the Bulk Alt Text page to generate for multiple images at once
+4. **Automatic**: Enable auto-generation to create alt text for all new uploads automatically
+5. **Customize**: Adjust language, style, and length preferences in settings
+6. **Done**: Alt text is instantly applied to your images
+
 ### 💡 Perfect For
 
-* **Ecommerce**: Create product images, banners, and promotional graphics
-* **Content Creators**: Generate unique images for blog posts and articles
-* **Marketers**: Create eye-catching visuals for campaigns
-* **Designers**: Rapidly prototype and iterate on visual concepts
-* **Small Business**: Professional images without expensive software
-* **Agencies**: Streamline client deliverables with AI efficiency
+* **Accessibility Advocates**: Ensure all images meet WCAG compliance with AI-generated alt text
+* **SEO Professionals**: Improve image search rankings with optimized alt text
+* **Content Creators**: Generate unique images AND alt text for blog posts and articles
+* **Ecommerce**: Create product images with descriptive alt text for better accessibility and SEO
+* **Marketers**: Create eye-catching visuals with SEO-friendly descriptions
+* **Designers**: Rapidly prototype and iterate on visual concepts with automatic accessibility
+* **Small Business**: Professional images and accessibility without expensive software
+* **Agencies**: Streamline client deliverables with AI efficiency and built-in accessibility
 
 ### 🏆 Why Choose W3A11Y Artisan?
 
-* **Industry-Leading AI**: Powered by advanced machine learning models
+* **Industry-Leading AI**: Powered by advanced machine learning models for both images and alt text
 * **WordPress Native**: Built specifically for WordPress workflows
 * **User-Friendly**: No technical knowledge required
-* **Time-Saving**: Generate professional images in seconds
-* **Cost-Effective**: Reduce reliance on stock photos and designers
-* **Accessibility First**: Built with web accessibility best practices
+* **Time-Saving**: Generate professional images AND alt text in seconds
+* **Cost-Effective**: Reduce reliance on stock photos, designers, and manual alt text writing
+* **Accessibility First**: Built with web accessibility best practices - automatic WCAG compliance
+* **SEO Boost**: Quality alt text improves image search rankings and overall SEO
+* **Bulk Processing**: Generate alt text for hundreds of images at once
+* **Multi-Language**: Support for 100+ languages for global accessibility
 
 ### 📈 Boost Your Productivity
 
-Transform hours of image searching and editing into seconds of AI-powered creation. Whether you're building a blog, e-commerce site, or business website, W3A11Y Artisan helps you create professional visual content that engages your audience.
+Transform hours of image searching, editing, and alt text writing into seconds of AI-powered creation. Whether you're building a blog, e-commerce site, or business website, W3A11Y Artisan helps you create professional visual content that engages your audience while ensuring full accessibility compliance. No more manually writing alt text for hundreds of images - let AI do it perfectly in seconds.
 
 ### 🔐 Security & Privacy
 
@@ -94,7 +119,7 @@ Transform hours of image searching and editing into seconds of AI-powered creati
 
 ### 💰 Flexible Pricing
 
-Start with our free 40 credits to experience the power of AI image and alt text generation. Upgrade to paid plans for increased usage limits and advanced features.
+Start with our free 40 credits to experience the power of AI image and alt text generation. Alt text generation costs only 1-2 credits per image (depending on format), while image generation costs 6 credits. Upgrade to paid plans for increased usage limits and advanced features.
 
 [Get Your API Key](https://w3a11y.com/register) | [View Pricing](https://w3a11y.com/pricing) | [Documentation](https://w3a11y.com/docs)
 
@@ -121,9 +146,11 @@ Start with our free 40 credits to experience the power of AI image and alt text 
 1. **Get API Key**: Register at [W3A11y.com](https://w3a11y.com/register) and generate new API key at [API Keys](https://w3a11y.com/settings#api-keys)
 2. **Add API Key**: Go to `W3A11Y > Artisan Settings` in your WordPress admin
 3. **Test Connection**: Use the "Validate" button to verify API key and connection, then save settings
-4. **Start Generating Images**: Visit Media Library and click "Generate Image With W3A11Y Artisan"
-5. **Edit Images**: Select any image from Media Library and click "Edit with W3A11Y Artisan"
-6. **AltText Generation**: Select any image from Media Library and click "Generate Alt Text" to get AI-generated alt text.
+4. **Configure Alt Text** (Optional): In AltText Settings section, customize language, style, max length, and enable auto-generation on upload
+5. **Start Generating Images**: Visit Media Library and click "Generate Image With W3A11Y Artisan"
+6. **Edit Images**: Select any image from Media Library and click "Edit with W3A11Y Artisan"
+7. **Generate Alt Text**: Select any image from Media Library and click "Generate Alt Text" to get AI-generated alt text
+8. **Bulk Alt Text**: Go to `W3A11Y > Bulk Alt Text` to generate alt text for multiple images at once
 
 == Frequently Asked Questions ==
 
@@ -138,6 +165,18 @@ The plugin supports JPG, PNG, and WebP formats for both generation and editing. 
 = Is there a limit to how many images or alttext I can generate? =
 
 Usage limits depend on your credits. Per image generation or editing consumes 6 credits. Per alttext generation consumes 1-2 credits based on the formats. Standard formats (jpg, png, gif and webp) cost 1 credit and Enhanced formats (svg, avif, bmp, dng, tiff, tif, heic, heif, and ico) cost 2 credits. You can monitor your credit usage during generation, plugin settings and on the [Profile Credits](https://w3a11y.com/profile/credits).
+
+= How does automatic alt text generation work? =
+
+When enabled in settings under "AltText Settings > Auto-Generate on Upload", the plugin will automatically generate descriptive alt text for all newly uploaded images. The AI analyzes each image and creates contextually appropriate, accessible descriptions that meet WCAG standards. You can customize the language, style, and length in the settings.
+
+= Can I generate alt text for existing images? =
+
+Yes! You can generate alt text for existing images in three ways: 1) Click "Generate Alt Text" button on any individual image in the Media Library, 2) Use the Bulk Alt Text page (W3A11Y > Bulk Alt Text) to process multiple images at once, or 3) Enable auto-generation and re-upload images. The bulk processor can handle hundreds of images efficiently.
+
+= Will alt text generation overwrite my existing alt text? =
+
+No, by default the plugin will not overwrite existing alt text when using auto-generation on upload. For manual generation (single or bulk), you have control over whether to overwrite existing alt text. This ensures you never accidentally lose carefully crafted descriptions.
 
 = Can I edit images that weren't generated by the AI? =
 
@@ -182,13 +221,16 @@ We offer comprehensive support through multiple channels:
 
 = 1.0 =
 * Initial release
-* AI image generation from text descriptions
+* AI image generation from text descriptions with voice input support
 * AI-powered image editing capabilities
+* Intelligent alt text generation with one-click and bulk processing
+* Automatic alt text generation on image upload (optional)
+* Multi-language alt text support (100+ languages)
+* Customizable alt text styles: detailed, concise, and functional
 * WordPress Media Library integration
 * Professional modal interface with dark theme
 * Generation history tracking
-* Multi-language support ready
-* Accessibility optimized
+* Accessibility optimized with WCAG 2.1 AA compliance
 * Security hardened with WordPress best practices
 
 == Upgrade Notice ==
